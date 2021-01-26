@@ -1,0 +1,4 @@
+Import-Csv -Delimiter ',' accu-input.csv | 
+    Group-Object -Property 'NHS number' |
+    Select-Object @{N='Title';E={($_.Group | Measure-Object -Property 'Title' -Maximum).Maximum }},@{N='First name';E={($_.Group | Measure-Object -Property 'First name' -Maximum).Maximum }},@{N='Surname';E={($_.Group | Measure-Object -Property 'Surname' -Maximum).Maximum }},@{N='Date of birth';E={($_.Group | Measure-Object -Property 'Date of birth' -Maximum).Maximum}},@{N='NHS number';E={($_.Group | Measure-Object -Property 'NHS number' -Maximum).Maximum}},@{N='Telecom number';E={($_.Group | Measure-Object -Property 'Telecom number' -Maximum).Maximum }} | select-object 'Title','First name','Surname','Date of birth','NHS Number',@{N='Mobile telephone';E={$_.'Telecom number'}}|
+     Export-csv accu-output.csv -NoTypeInformation
