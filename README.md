@@ -1,3 +1,5 @@
+V2 BETA update :  Version 2 of the post_accubook tool replaces 2 QR codes with a single QR code. Users need to open a new patient record in Pinnacle the ALT-TAB into a PowerShell Prompt, then scan the QR code.  This will auto complete all neccessary fields for Pinnacle Pre-Screening upto the PDS matching Patient confirmation section.
+
 # Accubook_tools
 
 A set of tools to help with
