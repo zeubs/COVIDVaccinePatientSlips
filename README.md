@@ -34,3 +34,8 @@ go to accubook -> surgery name -> booked list -> click export on the relevant cl
 -> right click on the downloaded QR tool and select 'open with' then chose Chrome 
 -> press the 'Choose file' button and navigate and select the downloaded csv file from Accubook 
 -> this will generate the QR codes -> set printer to landscape -> print
+
+
+# IG and Security
+
+No data is transferred anywhere when using this tool, all the process is done in your web browser. The tool uses some open source libraries to work. Using the tool is entirely at your own risk.
