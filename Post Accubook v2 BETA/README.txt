@@ -1,3 +1,5 @@
+Open the tool in Chrome
+Import accu-output.xlsx
 Print Codes in A4 portrait
 Scanners need to be configured with RETURN character after scan
 Once QR codes are generated and printed
