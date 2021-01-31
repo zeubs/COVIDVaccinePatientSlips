@@ -145,7 +145,7 @@
             month: "short",
             day: "numeric",
           })
-          .replace(/ /g, "-");
+          .replace(/ /g, "-").replace(/Sept/, "Sep");
       }
 
       $("#filename").change(function (e) {

@@ -162,7 +162,7 @@
             month: "short",
             day: "numeric",
           })
-          .replace(/ /g, "-");
+          .replace(/ /g, "-").replace(/Sept/, "Sep");
       }
         function formatDateExp(date) {
         var dateString = date;
@@ -174,7 +174,7 @@
             month: "short",
             day: "numeric",
           })
-          .replace(/ /g, "-");
+          .replace(/ /g, "-").replace(/Sept/, "Sep");
       }
 
       $("#filename").change(function (e) {
