@@ -33,14 +33,14 @@
       .col-print-6 {
         width: 33%;
         float: left;
-        height: 145px;
+        height: 175px;
         padding: 9px 5px 1px 0px;
       }
 
       .qr-code canvas {
         margin: 0 auto;
-        width: 90px;
-        height: 90px;
+        width: 100px;
+        height: 100px;
       }
 
       .col-print-6 > div > span {
@@ -213,7 +213,7 @@
 
             var pdfPage = 0;
             csvResult.forEach(function (patient, index) {
-              const PAGE_SIZE = 21;
+              const PAGE_SIZE = 18;
 
               if (i == 0) {
                 var firstPatientOnThePageIndex = pdfPage * PAGE_SIZE;
