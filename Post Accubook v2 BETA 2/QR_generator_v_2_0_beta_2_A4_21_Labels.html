@@ -289,7 +289,7 @@
                 `{TAB} ");`;
 
               const POWERSHELL_SCRIPT_2 =
-                `$ws = New-Object -ComObject wscript.shell;$ws.SendKeys('%{TAB}');sleep -s 1;For($i=1;$i-le12;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@ @);For($i=1;$i-le5;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@` + formatDate(patient.DateOfBirth) + `{TAB}` +patient.NhsNumber + `{TAB} @);sleep -s 3;$ws.SendKeys(@{TAB}{TAB} @);`;
+                `$ws = New-Object -ComObject wscript.shell;$ws.SendKeys(@%{TAB}@);sleep -s 1;For($i=1;$i-le12;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@ @);For($i=1;$i-le5;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@` + formatDate(patient.DateOfBirth) + `{TAB}` +patient.NhsNumber + `{TAB} @);sleep -s 3;$ws.SendKeys(@{TAB}{TAB} @);`;
               $("#dob-qr-" + index).qrcode({
                 text: POWERSHELL_SCRIPT_2,
               });
