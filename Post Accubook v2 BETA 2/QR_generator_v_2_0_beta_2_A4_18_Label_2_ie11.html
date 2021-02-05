@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Patient List</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-csv@1.0.11/src/jquery.csv.min.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.js"></script>-->
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/plugin/customParseFormat.js"></script>
+    <script>
+      dayjs.extend(dayjs_plugin_customParseFormat);
+    </script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/lrsjng.jquery-qrcode/0.18.0/jquery-qrcode.min.js"
+      integrity="sha512-P9oNnyfvOZrY1H0D5js+UcLZr+vLkX50glCUlpJAd/RL84+KBtGI4yvH5YVM5TejD+jbURwQq3C/7hgYWOo8bQ=="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      .col-print-6 {
+        width: 33%;
+        float: left;
+        height: 175px;
+        padding: 9px 5px 1px 0px;
+      }
+
+      .qr-code canvas {
+        margin: 0 auto;
+        width: 100px;
+        height: 100px;
+      }
+
+      .col-print-6 > div > span {
+        font-size: 10px;
+      }
+
+      .col {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .page-break-clear {
+        clear: both;
+      }
+
+      .page-break {
+        page-break-after: always;
+        /* depreciating, use break-after */
+        break-after: page;
+        height: 0px;
+        display: block !important;
+      }
+
+      .patient-name {
+        font-size: 1rem;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      table {
+        text-align: center;
+        width: 100%;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+
+      td {
+        font-size: 9px;
+      }
+
+      .info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      @media print {
+        @page {
+          margin: 10px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="input-modal"
+      class="h-100 row align-items-center justify-content-center"
+    >
+      <div class="col-sm-6">
+        <h1>AccuBook Clinic QR Code Generator</h1>
+        <p>
+          Export clinic from Accubook then upload into this tool. You will automatically
+          be generated a printable QR Code list of all sessions for that clinic (make sure page orientation is set to portrait before printing). 
+        </p>
+
+        <p>
+          This tool was modified by SG@MLS and R.Pacifico based on the original work by <a href="https://github.com/DrMikeyS/COVIDVaccinePatientSlips">DrMikeyS</a>.
+        </p>
+
+        <p>
+          No data is transferred anywhere when using this tool, all the process
+          is done in your web browser so there are no IG concerns.
+        </p>
+        <br>
+        <p>
+          Please select the vaccine
+        </p>
+        <input type="radio" id="pfizer_id" name="vacc" value="pfizer">
+        <label for="pfizer_id">pfizer</label><br>
+        <input type="radio" id="oxfordaz_id" name="vacc" value="oxfordaz">
+        <label for="oxfordaz_id">oxfordaz</label><br><br>
+        <label for="dateid">Please select expiry date: </label>
+        <input type="date" id="dateid" name="vaccdate" min="2020-01-01" max="2030-01-01">
+        <br>
+        <br>
+        <label for="freetxt_id">Please enter batch number: </label>
+        <input type="text" id="freetxt_id" name="freetxt_id"><br>
+        <br>
+        <br><br>
+        <label for="filename">Add Patient List File:</label>
+        <input
+          type="file"
+          name="filename"
+          id="filename"
+          class="form-control-file"
+        />
+        <small class="form-text text-muted">This should be in csv format</small>
+      </div>
+    </div>
+
+    <div class="container-fluid" id="patient-list"></div>
+
+    <script>
+      /**
+       * FOR TESTING, AN A4 PAGE IS 794px;
+       */
+
+      dayjs.extend(window.dayjs_plugin_customParseFormat);
+      //Format date into the pinnacle format
+      function formatDate(date) {
+        var dateString = date;
+        var splitDate = dateString.split("-");
+        var month = splitDate[1] - 1; //Javascript months are 0-11
+        return new Date(splitDate[2], month, splitDate[0])
+          .toLocaleDateString("en-gb", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+          .replace(/ /g, "-").replace(/Sept/, "Sep");
+      }
+        function formatDateExp(date) {
+        var dateString = date;
+        var splitDate = dateString.split("-");
+        var month = splitDate[1] - 1; //Javascript months are 0-11
+        return new Date(splitDate[2], month, splitDate[0])
+          .toLocaleDateString("en-gb", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+          .replace(/ /g, "-").replace(/Sept/, "Sep");
+      }
+
+      $("#filename").change(function (e) {
+        $("#input-modal").css("display", "none");
+
+        //DEBUG
+        var ext = $("input#filename").val().split(".").pop().toLowerCase();
+        if ($.inArray(ext, ["csv"]) == -1) {
+          alert("Error");
+          return false;
+        }
+        if (e.target.files != undefined) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            csvResult = e.target.result;
+
+            csvResult = $.csv.toObjects(csvResult);
+            var i = 0;
+            var fullhtml = "";
+
+            csvResult = csvResult.sort((a, b) => {
+              let aDate = dayjs(
+                `${a.SessionDate} ${a.StartTime}`,
+                "DD-MM-YYYY HH:mm"
+              );
+
+              let bDate = dayjs(
+                `${b.SessionDate} ${b.StartTime}`,
+                "DD-MM-YYYY HH:mm"
+              );
+
+              return aDate.diff(bDate);
+            });
+
+            console.log({ csvResult });
+
+            var pdfPage = 0;
+            csvResult.forEach(function (patient, index) {
+              const PAGE_SIZE = 18;
+
+              if (i == 0) {
+                var firstPatientOnThePageIndex = pdfPage * PAGE_SIZE;
+                var lastPatientOnThePageIndex =
+                  pdfPage * PAGE_SIZE + (PAGE_SIZE - 1);
+
+                if (lastPatientOnThePageIndex > csvResult.length) {
+                  lastPatientOnThePageIndex = csvResult.length - 1;
+                }
+
+                var firstPatientOnPage = csvResult[firstPatientOnThePageIndex];
+                var lastPatientOnThePage = csvResult[lastPatientOnThePageIndex];
+
+                start = `<div class="row"><span style="margin: 10px 0px; font-size: 10px;">Sessions from ${firstPatientOnPage.SessionDate} ${firstPatientOnPage.StartTime} to ${lastPatientOnThePage.SessionDate} ${lastPatientOnThePage.StartTime} </span>`;
+              } else {
+                start = "";
+              }
+              if (i == PAGE_SIZE - 1) {
+                end = `</div><div class="page-break-clear"></div><div class="page-break">&nbsp;</div>`;
+                i = 0;
+                pdfPage++;
+              } else {
+                end = "";
+                i++;
+              }
+              html =
+                start +
+                `<div class="col-print-6"><div class="col">
+                                <span class="patient-name">` +
+                patient.Name.split(",")[0] +
+                `</span></div>
+                                <table>
+                                <tr>
+                                <td class="info"><span>DOB: ` +
+                formatDate(patient.DateOfBirth) +
+                ` Vacc : ` +
+                document.querySelector('input[name=vacc]:checked').value +
+                `</span>` +
+                `<span>Batch :  ` +
+                document.getElementById("freetxt_id").value + 
+                ` Exp :  ` +
+                document.querySelector('input[name=vaccdate]').value + 
+                `</span>` +
+                `</td>` +
+                // `<td>NHS: ` +
+                // patient.NhsNumber +
+                // `</td>` +
+                `</tr>
+                                <tr>
+                                <td><div class="qr-code" id="dob-qr-` +
+                index +
+                `"></div></td>` +
+                //NHS
+                // `<td><div class="qr-code" id="nhs-qr-` +
+                // index +
+                // `"></div></td>` +
+                //END
+                `</tr>
+                                </table></div>` +
+                end;
+              fullhtml = fullhtml + html;
+            });
+            $("#patient-list").append(fullhtml);
+
+            csvResult.forEach(function (patient, index) {
+              const POWERSHELL_SCRIPT =
+                `$wshell = New-Object -ComObject wscript.shell;` +
+                `$wshell.SendKeys('%{TAB}');` +
+                `sleep -s 1;$wshell.SendKeys("` +
+                formatDate(patient.DateOfBirth) +
+                `{TAB}` +
+                patient.NhsNumber +
+                `{TAB} ");`;
+
+              const POWERSHELL_SCRIPT_2 =
+                `$ws = New-Object -ComObject wscript.shell;$ws.AppActivate('Services - Outcomes4Health - Internet Explorer');sleep -s 1;For($i=1;$i-le12;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@ @);For($i=1;$i-le5;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@` + formatDate(patient.DateOfBirth) + `{TAB}` +patient.NhsNumber + `{TAB} @);sleep -s 3;$ws.SendKeys(@{TAB}{TAB} @);`;
+              $("#dob-qr-" + index).qrcode({
+                text: POWERSHELL_SCRIPT_2,
+              });
+              // $("#nhs-qr-" + index).qrcode({ text: patient.NhsNumber });
+            });
+
+            window.print();
+          };
+          reader.readAsText(e.target.files.item(0));
+        }
+        return false;
+      });
+    </script>
+  </body>
+</html>
