@@ -124,7 +124,7 @@
         <label for="pfizer_id">pfizer</label><br>
         <input type="radio" id="oxfordaz_id" name="vacc" value="oxfordaz">
         <label for="oxfordaz_id">oxfordaz</label><br><br>
-        <label for="dateid">Please select expiry date: </label>
+        <label for="dateid">Please select vaccine date: </label>
         <input type="date" id="dateid" name="vaccdate" min="2020-01-01" max="2030-01-01">
         <br>
         <br>
@@ -247,14 +247,14 @@
                 `</span></div>
                                 <table>
                                 <tr>
-                                <td class="info"><span>DOB: ` +
+                                <td class="info"><span>DOB:` +
                 formatDate(patient.DateOfBirth) +
-                ` Vacc : ` +
+                ` Vacc:` +
                 document.querySelector('input[name=vacc]:checked').value +
                 `</span>` +
-                `<span>Batch :  ` +
+                `<span>Batch:` +
                 document.getElementById("freetxt_id").value + 
-                ` Exp :  ` +
+                `  Date:` +
                 document.querySelector('input[name=vaccdate]').value + 
                 `</span>` +
                 `</td>` +
@@ -289,7 +289,7 @@
                 `{TAB} ");`;
 
               const POWERSHELL_SCRIPT_2 =
-                `$ws = New-Object -ComObject wscript.shell;$ws.AppActivate('Services - Outcomes4Health - Internet Explorer');sleep -s 1;For($i=1;$i-le12;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@ @);For($i=1;$i-le5;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@` + formatDate(patient.DateOfBirth) + `{TAB}` +patient.NhsNumber + `{TAB} @);sleep -s 3;$ws.SendKeys(@{TAB}{TAB} @);`;
+                `$ws = New-Object -ComObject wscript.shell;$ws.AppActivate('Services - Outcomes4Health - Internet Explorer');sleep -s 1;For($i=1;$i-le18;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@ @);For($i=1;$i-le5;$i++){$ws.SendKeys(@{TAB}@)};$ws.SendKeys(@` + formatDate(patient.DateOfBirth) + `{TAB}` +patient.NhsNumber + `{TAB} @);sleep -s 3;$ws.SendKeys(@{TAB}{TAB} @);`;
               $("#dob-qr-" + index).qrcode({
                 text: POWERSHELL_SCRIPT_2,
               });
